@@ -61,7 +61,6 @@ def plot_data(X, title):
 
 X = np.random.multivariate_normal([mu] * cov.shape[0], cov, N_data)
 X_mean = np.average(X, 0)
-plot_data(X - X_mean, title="link-1_raw-mean.png")
 
 
 def ewma_smoothing(X, alpha=0.03):
@@ -77,7 +76,6 @@ def ewma_smoothing(X, alpha=0.03):
 
 
 X_smoothed = ewma_smoothing(X)
-plot_data(X_smoothed, title="link-1_smoothed.png")
 
 # 3. データから時間平均を引き、r つの固有ベクトルで部分空間にマップする
 #    異常なトラフィックもこの時に生成
@@ -95,6 +93,7 @@ def map_ortho_comp(R, x_t):
 pca = PCA()
 pca.fit(X - X_mean)
 X[abnormal_time][abnormal_link] += 700
+plot_data(X - X_mean, title="link-1_raw-mean.png")
 R = pca.components_[:r, :].T
 y_tilde = np.array([map_ortho_comp(R, x_t) for x_t in (X - X_mean)])
 plot_data(y_tilde, title="link-1_ytilde.png")
