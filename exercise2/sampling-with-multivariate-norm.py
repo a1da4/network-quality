@@ -1,13 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
-
-
-def plot_scatter(Y_1, Y_2):
-    plt.xlabel("Y1")
-    plt.ylabel("Y2")
-    plt.scatter(Y_1, Y_2)
-    plt.show()
-
+import numpy as np
 
 if __name__ == "__main__":
     np.random.seed(1)
@@ -22,4 +14,7 @@ if __name__ == "__main__":
         ]
     )
     Y_1, Y_2 = np.random.multivariate_normal(mean, cov, size=N).T
-    plot_scatter(Y_1, Y_2)
+    plt.xlabel("Y1")
+    plt.ylabel("Y2")
+    plt.scatter(Y_1, Y_2)
+    plt.savefig("random-numbers_from_multivariate-norm.png")

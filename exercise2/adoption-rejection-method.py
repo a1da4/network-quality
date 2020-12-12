@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def f(x):
@@ -64,7 +64,6 @@ if __name__ == "__main__":
     ax1.plot(x, crx, label="cr(x)")
 
     # 採択棄却法による乱数生成
-    # TODO 別の縦軸にプロット
     num = 1000
     samples = rejection(num, x, c, sigma_1, mu_1, lambda_1, sigma_2, mu_2)
     ax2.hist(samples, bins=20, label="sampled")
@@ -73,4 +72,4 @@ if __name__ == "__main__":
     handler2, label2 = ax2.get_legend_handles_labels()
 
     ax1.legend(handler1 + handler2, label1 + label2)
-    plt.show()
+    plt.savefig("random-numbers_from_adoption-rejection.png")

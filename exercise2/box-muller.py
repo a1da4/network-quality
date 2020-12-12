@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def box_muller(mu_1, sigma_1, mu_2, sigma_2, num=1000):
@@ -16,10 +16,7 @@ def box_muller(mu_1, sigma_1, mu_2, sigma_2, num=1000):
     while obtained < num:
         x_1 = np.random.normal(mu_1, sigma_1)
         x_2 = np.random.normal(mu_2, sigma_2)
-        print("sample x_1 and x_2")
-        print(f" - x1: {x_1}, x2: {x_2}")
         w = x_1 ** 2 + x_2 ** 2
-        print(f" - w: {w}")
         if w > 1:
             continue
         else:
@@ -32,13 +29,6 @@ def box_muller(mu_1, sigma_1, mu_2, sigma_2, num=1000):
     return X_1, X_2
 
 
-def plot_scatter(X_1, X_2):
-    plt.xlabel("X1")
-    plt.ylabel("X2")
-    plt.scatter(X_1, X_2)
-    plt.show()
-
-
 if __name__ == "__main__":
     np.random.seed(1)
     mu_1 = 0
@@ -46,4 +36,7 @@ if __name__ == "__main__":
     mu_2 = 0
     sigma_2 = 1
     X_1, X_2 = box_muller(mu_1, sigma_1, mu_2, sigma_2)
-    plot_scatter(X_1, X_2)
+    plt.xlabel("X1")
+    plt.ylabel("X2")
+    plt.scatter(X_1, X_2)
+    plt.savefig("random-numbers_from_box-muller.png")
