@@ -1,3 +1,4 @@
+# 採択棄却法で f(x)=0.9281 * exp(-(x-4)^2) + 0.1856 - 0.0742 * (x-1)^2 に従う乱数を生成
 import matplotlib.pyplot as plt
 import numpy as np
 

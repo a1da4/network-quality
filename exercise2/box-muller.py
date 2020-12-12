@@ -1,3 +1,4 @@
+# box-muller 法で平均0、分散1の正規分布に従う確率変数 X1, X2 の乱数を生成し、1000組描画
 import matplotlib.pyplot as plt
 import numpy as np
 

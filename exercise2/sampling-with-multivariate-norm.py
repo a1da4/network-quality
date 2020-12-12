@@ -1,3 +1,4 @@
+# 2次の多変量正規分布に従う乱数を生成
 import matplotlib.pyplot as plt
 import numpy as np
 
