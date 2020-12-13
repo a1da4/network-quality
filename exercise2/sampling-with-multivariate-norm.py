@@ -8,10 +8,13 @@ if __name__ == "__main__":
     mu_2 = 200
     N = 1000
     mean = np.array([mu_1, mu_2])
+    sigma_1 = 0.3 * mu_1
+    sigma_2 = 0.3 * mu_2
+    sigma_12 = 0.7 * sigma_1 * sigma_2
     cov = np.array(
         [
-            [(0.3 * mu_1) ** 2, 0.7 * mu_1 * mu_2],
-            [0.7 * mu_1 * mu_2, (0.3 * mu_2) ** 2],
+            [sigma_1 ** 2, sigma_12],
+            [sigma_12, sigma_2 ** 2],
         ]
     )
     Y_1, Y_2 = np.random.multivariate_normal(mean, cov, size=N).T
