@@ -70,7 +70,7 @@ def visualize(X):
     plt.xlabel("nodes")
     plt.ylabel("delay")
     plt.bar(range(1, len(X) + 1), X)
-    ticks = plt.xticks(range(1, len(X) + 1), range(1, len(X) + 1))
+    plt.xticks(range(1, len(X) + 1), range(1, len(X) + 1))
     plt.show()
 
 
