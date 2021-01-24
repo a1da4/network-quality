@@ -1,36 +1,10 @@
 # 巨大な遅延時間を発生しているノードを発見する
+import matplotlib.pyplot as plt
 import numpy as np
 
 # ネットワークの設定
 print("\n1. define network...")
 N = 21
-hops = [
-    [0, 4, 4, 4, 4, 5, 5, 4, 5, 5, 4, 4, 2, 1, 3, 3, 4, 4, 3, 2, 3],
-    [4, 0, 2, 4, 4, 5, 5, 4, 5, 5, 4, 4, 4, 3, 1, 3, 4, 4, 3, 2, 3],
-    [4, 2, 0, 4, 4, 5, 5, 4, 5, 5, 4, 4, 4, 3, 1, 3, 4, 4, 3, 2, 3],
-    [4, 4, 4, 0, 2, 5, 5, 4, 5, 5, 4, 4, 4, 3, 3, 1, 4, 4, 3, 2, 3],
-    [4, 4, 4, 2, 0, 5, 5, 4, 5, 5, 4, 4, 4, 3, 3, 1, 4, 4, 3, 2, 3],
-    [5, 5, 5, 5, 5, 0, 2, 3, 4, 4, 5, 5, 5, 4, 4, 4, 1, 3, 4, 3, 2],
-    [5, 5, 5, 5, 5, 2, 0, 3, 4, 4, 5, 5, 5, 4, 4, 4, 1, 3, 4, 3, 2],
-    [4, 4, 4, 4, 4, 3, 3, 0, 3, 3, 4, 4, 4, 3, 3, 3, 2, 2, 3, 2, 1],
-    [5, 5, 5, 5, 5, 4, 4, 3, 0, 2, 5, 5, 5, 4, 4, 4, 3, 1, 4, 3, 2],
-    [5, 5, 5, 5, 5, 4, 4, 3, 2, 0, 5, 5, 5, 4, 4, 4, 3, 1, 4, 3, 2],
-    [4, 4, 4, 4, 4, 5, 5, 4, 5, 5, 0, 2, 4, 3, 3, 3, 4, 4, 1, 2, 3],
-    [4, 4, 4, 4, 4, 5, 5, 4, 5, 5, 2, 0, 4, 3, 3, 3, 4, 4, 1, 2, 3],
-    [2, 4, 4, 4, 4, 5, 5, 4, 5, 5, 4, 4, 0, 1, 3, 3, 4, 4, 3, 2, 3],
-    [1, 3, 3, 3, 3, 4, 4, 3, 4, 4, 3, 3, 1, 0, 2, 2, 3, 3, 2, 1, 2],
-    [3, 1, 1, 3, 3, 4, 4, 3, 4, 4, 3, 3, 3, 2, 0, 2, 3, 3, 2, 1, 2],
-    [3, 3, 3, 1, 1, 4, 4, 3, 4, 4, 3, 3, 3, 2, 2, 0, 3, 3, 2, 1, 2],
-    [4, 4, 4, 4, 4, 1, 1, 2, 3, 3, 4, 4, 4, 3, 3, 3, 0, 2, 3, 2, 1],
-    [4, 4, 4, 4, 4, 3, 3, 2, 1, 1, 4, 4, 4, 3, 3, 3, 2, 0, 3, 2, 1],
-    [3, 3, 3, 3, 3, 4, 4, 3, 4, 4, 1, 1, 3, 2, 2, 2, 3, 3, 0, 1, 2],
-    [2, 2, 2, 2, 2, 3, 3, 2, 3, 3, 2, 2, 2, 1, 1, 1, 2, 2, 1, 0, 1],
-    [3, 3, 3, 3, 3, 2, 2, 1, 2, 2, 3, 3, 3, 2, 2, 2, 1, 1, 2, 1, 0],
-]
-for i in range(N):
-    for j in range(N):
-        assert hops[i][j] == hops[j][i], f"DistanceDoesNotMatch {i}, {j}"
-
 routes = [
     [0, 13, 19, 20, 17, 8],
     [1, 14, 19, 18, 11],
@@ -47,8 +21,12 @@ A = np.zeros([len(routes), N])
 for i, route in enumerate(routes):
     for node in route:
         A[i][node] += 1
+max_eig_AtA = np.linalg.eig(A.T @ A)[0][0].real
+c = int(max_eig_AtA) + 1
 print(f" - routes: {routes}")
 print(f" - A: {A}")
+print(f" - max(eig(AtA)): {max_eig_AtA}")
+print(f" - parameter c: {c}")
 print("done")
 
 # データの読み込み
@@ -60,37 +38,50 @@ with open("delay.csv") as fp:
         delays = delays.split(",")
         delays = [float(delay) for delay in delays]
         y.append(delays)
-        #print(delays)
-        #print(len(delays))
 y = np.array(y)
 print(f" - y: {y.shape}")
 print("done")
 
-# 各ノードの遅延時間 X の初期値は、ノードの hop に応じて決めた方が良さそう
 print("\n3. initialize delay matrix...")
-def calc_cov(i, j, var, hops, delta):
-    if i == j:
-        return var
-    else:
-        var *= np.exp(-hops[i][j] / delta)
-        return var
-
-# データを元に平均を出したい
-#mu = np.average(A)
-mu = np.average(y)
-print(f" - mu: {mu}")
-c = 2.0
-sigma = c * mu
-delta = 5.0
-cov = np.zeros([N, N])
-
-for i in range(N):
-    for j in range(N):
-        var = calc_cov(i, j, sigma ** 2, hops, delta)
-        cov[i][j] = var
-
-#print(cov)
-mean = np.array([mu for _ in range(N)])
-X = np.random.multivariate_normal(mean, cov)
+X = A.T @ np.average(y, axis=1)
 print(f" - X: {X}")
+print("done")
+
+print("\n4. update...")
+lam = 1
+
+
+def update(X, y, lam, c):
+    return soft_threshold(X - (1 / c) * A.T @ (A @ X - y), lam / c)
+
+
+def soft_threshold(X, gamma):
+    return np.sign(X) * np.maximum(0, np.abs(X) - gamma)
+
+
+def evaluate(X, y, A, lam):
+    loss = 0
+    for i in range(y.shape[1]):
+        loss += np.linalg.norm(A @ X - y[:, i]) ** 2 + lam * np.sum(np.abs(X))
+    return loss / y.shape[1]
+
+
+def visualize(X):
+    plt.xlabel("nodes")
+    plt.ylabel("delay")
+    plt.bar(range(1, len(X) + 1), X)
+    ticks = plt.xticks(range(1, len(X) + 1), range(1, len(X) + 1))
+    plt.show()
+
+
+for epoch in range(100):
+    print(f" - epoch: {epoch}")
+    for i in range(y.shape[1]):
+        X_update = update(X, y[:, i], lam, c)
+        X = X_update
+    print(f" - evaluate: {evaluate(X, y, A, lam)}")
+
+print(f" - X: {X}")
+visualize(X)
+
 print("done")
